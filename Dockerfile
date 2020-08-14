@@ -1,4 +1,4 @@
-FROM csigabit/baseimage-alpine:3.12
+FROM csigabit/baseimage-alpine-1:latest
 
 # set version label
 ARG BUILD_DATE
