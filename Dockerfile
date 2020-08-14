@@ -1,4 +1,4 @@
-FROM csigabit/baseimage-alpine-1:latest
+FROM csigabit/baseimage-alpine:3.12
 
 # set version label
 ARG BUILD_DATE
@@ -60,6 +60,15 @@ RUN \
  wget http://ftp.hu.debian.org/debian/pool/main/libc/libcereal/libcereal-dev_1.2.1-2_amd64.deb && \
  dpkg --add-architecture amd64 && \
  dpkg -i libcereal-dev_1.2.1-2_amd64.deb && \
+ echo "########################### Cmake ###########################" && \
+ wget https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1.tar.gz && \
+ tar -xzvf cmake-3.18.1.tar.gz && \
+ rm cmake-3.18.1.tar.gz && \
+ cd cmake-3.18.1 && \
+ ./bootstrap && \
+ make && \
+ make install && \
+ cd .. && \
  echo "**** link libftdi libs ****" && \
  ln -s /usr/lib/libftdi1.so /usr/lib/libftdi.so && \
  ln -s /usr/lib/libftdi1.a /usr/lib/libftdi.a && \
