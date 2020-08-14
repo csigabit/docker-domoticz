@@ -1,30 +1,29 @@
-FROM lsiobase/alpine:3.10
+FROM csigabit/baseimage-alpine:3.12
 
 # set version label
 ARG BUILD_DATE
 ARG VERSION
 ARG DOMOTICZ_COMMIT
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-LABEL maintainer="saarg"
+LABEL build_version="Custom version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="csigabit"
 
 # environment settings
 ENV HOME="/config"
 
-# copy prebuilds
-COPY patches/ /
-
 RUN \
+ echo "nameserver 1.1.1.1" > /etc/resolv.conf && \
  echo "**** install build packages ****" && \
+ rm -rf /var/cache/apk/* && \
+ apk update && \
  apk add --no-cache --virtual=build-dependencies \
 	argp-standalone \
 	autoconf \
 	automake \
 	binutils \
 	boost-dev \
-	cmake \
 	confuse-dev \
 	curl-dev \
-	doxygen \
+	dpkg \
 	eudev-dev \
 	g++ \
 	gcc \
@@ -54,40 +53,20 @@ RUN \
 	iputils \
 	libressl \
 	openssh \
+	lua5.3 \
+	lua5.3-dev \
+	lua5.3-libs \
 	python3-dev && \
+ wget http://ftp.hu.debian.org/debian/pool/main/libc/libcereal/libcereal-dev_1.2.1-2_amd64.deb && \
+ dpkg --add-architecture amd64 && \
+ dpkg -i libcereal-dev_1.2.1-2_amd64.deb && \
  echo "**** link libftdi libs ****" && \
  ln -s /usr/lib/libftdi1.so /usr/lib/libftdi.so && \
  ln -s /usr/lib/libftdi1.a /usr/lib/libftdi.a && \
  ln -s /usr/include/libftdi1/ftdi.h /usr/include/ftdi.h && \
- echo "**** build telldus-core ****" && \
- mkdir -p \
-	/tmp/telldus-core && \
- tar xf /tmp/patches/telldus-core-2.1.2.tar.gz -C \
-	/tmp/telldus-core --strip-components=1 && \
- curl -o /tmp/telldus-core/Doxyfile.in -L \
-	https://raw.githubusercontent.com/telldus/telldus/master/telldus-core/Doxyfile.in && \
- cp /tmp/patches/Socket_unix.cpp /tmp/telldus-core/common/Socket_unix.cpp && \
- cp /tmp/patches/ConnectionListener_unix.cpp /tmp/telldus-core/service/ConnectionListener_unix.cpp && \
- cp /tmp/patches/CMakeLists.txt /tmp/telldus-core/CMakeLists.txt && \
- cd /tmp/telldus-core && \
- cmake -DBUILD_TDADMIN=false -DCMAKE_INSTALL_PREFIX=/tmp/telldus-core . && \
- make && \
- echo "**** configure telldus core ****" && \
- mv /tmp/telldus-core/client/libtelldus-core.so.2.1.2 /usr/lib/libtelldus-core.so.2.1.2 && \
- mv /tmp/telldus-core/client/telldus-core.h /usr/include/telldus-core.h && \
- ln -s /usr/lib/libtelldus-core.so.2.1.2 /usr/lib/libtelldus-core.so.2 && \
- ln -s /usr/lib/libtelldus-core.so.2 /usr/lib/libtelldus-core.so && \
- echo "**** build openzwave ****" && \
- git clone https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
- ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
- cd /tmp/open-zwave && \
- make && \
- make \
-	instlibdir=usr/lib \
-	pkgconfigdir="usr/lib/pkgconfig/" \
-	PREFIX=/usr \
-	sysconfdir=etc/openzwave \
- install && \
+ echo "**** link lua ****" && \
+ cd /usr/bin && ln -s lua5.3 lua && \
+ cd /usr/lib && ln -s lua5.3/liblua.so liblua5.3.so && \
  echo "**** build domoticz ****" && \
  if [ -z ${DOMOTICZ_COMMIT+x} ]; then \
 	DOMOTICZ_COMMIT=$(curl -sX GET https://api.github.com/repos/domoticz/domoticz/commits/development \
@@ -97,25 +76,20 @@ RUN \
  cd /tmp/domoticz && \
  git checkout ${DOMOTICZ_COMMIT} && \
  cmake \
-	-DBUILD_SHARED_LIBS=True \
+	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX=/var/lib/domoticz \
-	-DOpenZWave=/usr/lib/libopenzwave.so \
-	-DUSE_BUILTIN_LUA=ON \
-	-DUSE_BUILTIN_MQTT=ON \
-	-DUSE_BUILTIN_SQLITE=OFF \
-	-DUSE_STATIC_BOOST=OFF \
-	-DUSE_STATIC_LIBSTDCXX=OFF \
-	-DUSE_STATIC_OPENZWAVE=OFF \
+	-DUSE_LUA_STATIC=YES \
+	-DUSE_BUILTIN_MQTT=YES \
+	-DUSE_BUILTIN_SQLITE=NO \
+	-DUSE_STATIC_BOOST=NO \
+	-DUSE_STATIC_LIBSTDCXX=NO \
 	-Wno-dev && \
  make && \
  make install && \
- echo "**** install BroadlinkRM2 plugin dependencies ****" && \
- git clone https://github.com/mjg59/python-broadlink.git /tmp/python-broadlink && \
- cd /tmp/python-broadlink && \
- git checkout 8bc67af6 && \
- pip3 install --no-cache-dir . && \
- pip3 install --no-cache-dir pyaes && \
+ git clone https://github.com/csigabit/domoticz-espmilighthub /var/lib/domoticz/plugins/ESPMilight && \
+ git clone https://github.com/csigabit/domoticz-yamaha /var/lib/domoticz/plugins/yamaha-av-receiver && \
+ git clone https://github.com/csigabit/domoticz-zigbee2mqtt /var/lib/domoticz/plugins/zigbee2mqtt && \
  echo "**** determine runtime packages using scanelf ****" && \
  RUNTIME_PACKAGES="$( \
 	scanelf --needed --nobanner /var/lib/domoticz/domoticz \
@@ -132,13 +106,14 @@ RUN \
  apk del --purge \
 	build-dependencies && \
  rm -rf \
+	/var/cache/apk/* \ 
 	/tmp/* \
 	/usr/lib/libftdi* \
 	/usr/include/ftdi.h
 
-# copy local files
+# copy local files
 COPY root/ /
 
 # ports and volumes
-EXPOSE 8080 6144 1443
+EXPOSE 1180 6144 11443
 VOLUME /config
