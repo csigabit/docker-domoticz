@@ -52,7 +52,7 @@ RUN \
 	eudev-libs \
 	iputils \
 	libressl \
-	openssh \
+	openssl \
 	lua5.3 \
 	lua5.3-dev \
 	lua5.3-libs \
