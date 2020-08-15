@@ -74,7 +74,7 @@ RUN \
  cd /usr/lib && ln -s lua5.3/liblua.so liblua5.3.so && \
  echo "**** build domoticz ****" && \
  if [ -z ${DOMOTICZ_COMMIT+x} ]; then \
-	DOMOTICZ_COMMIT=$(curl -sX GET https://api.github.com/repos/domoticz/domoticz/commits/development \
+	DOMOTICZ_COMMIT=$(curl -sX GET https://api.github.com/repos/domoticz/domoticz/commits/master \
 	| jq -r '. | .sha'); \
  fi && \
  git clone https://github.com/domoticz/domoticz.git /tmp/domoticz && \
