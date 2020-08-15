@@ -53,6 +53,7 @@ RUN \
 	openssl \
 	lua5.3-dev \
 	python3-dev && \
+ cd /tmp && \
  wget http://ftp.hu.debian.org/debian/pool/main/libc/libcereal/libcereal-dev_1.2.1-2_amd64.deb && \
  dpkg --add-architecture amd64 && \
  dpkg -i libcereal-dev_1.2.1-2_amd64.deb && \
