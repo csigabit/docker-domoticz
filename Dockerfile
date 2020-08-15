@@ -51,7 +51,6 @@ RUN \
 	curl \
 	eudev-libs \
 	iputils \
-	libressl \
 	openssl \
 	lua5.3 \
 	lua5.3-dev \
