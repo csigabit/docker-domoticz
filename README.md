@@ -2,8 +2,9 @@
 
 ```
 docker run \
-  --name=domoticz_2020.2 \
+  --name=domoticz \
   --restart=unless-stopped \
+  -d \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=Europe/Budapest \
@@ -12,4 +13,5 @@ docker run \
   -p 11443:1443 \
   -v /volume1/docker/domoticz:/config \
   csigabit/domoticz:2020.2
+  
 ```
