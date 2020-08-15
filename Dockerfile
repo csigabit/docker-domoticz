@@ -81,7 +81,7 @@ RUN \
  cd /tmp/domoticz && \
  git checkout ${DOMOTICZ_COMMIT} && \
  cmake \
-	-DBUILD_SHARED_LIBS=ON \
+	-DJSONCPP_LIB_BUILD_SHARED=ON \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX=/var/lib/domoticz \
 	-DUSE_LUA_STATIC=YES \
