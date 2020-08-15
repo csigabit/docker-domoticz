@@ -52,9 +52,7 @@ RUN \
 	eudev-libs \
 	iputils \
 	openssl \
-	lua5.3 \
 	lua5.3-dev \
-	lua5.3-libs \
 	python3-dev && \
  wget http://ftp.hu.debian.org/debian/pool/main/libc/libcereal/libcereal-dev_1.2.1-2_amd64.deb && \
  dpkg --add-architecture amd64 && \
