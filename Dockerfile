@@ -11,7 +11,6 @@ LABEL maintainer="csigabit"
 ENV HOME="/config"
 
 RUN \
- echo "nameserver 1.1.1.1" > /etc/resolv.conf && \
  echo "**** install build packages ****" && \
  rm -rf /var/cache/apk/* && \
  apk update && \
@@ -51,7 +50,7 @@ RUN \
 	curl \
 	eudev-libs \
 	iputils \
-	openssl \
+	libressl \
 	lua5.3-dev \
 	python3-dev && \
  wget http://ftp.hu.debian.org/debian/pool/main/libc/libcereal/libcereal-dev_1.2.1-2_amd64.deb && \
