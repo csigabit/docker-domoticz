@@ -6,7 +6,7 @@ docker run \
   --restart=unless-stopped \
   -e PUID=1000 \
   -e PGID=1000 \
-  -e TZ=Europe/London \
+  -e TZ=Europe/Budapest \
   -p 1180:1180 \
   -p 6144:6144 \
   -p 11443:11443 \
