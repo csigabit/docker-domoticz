@@ -65,7 +65,6 @@ RUN \
  ./bootstrap && \
  make && \
  make install && \
- cd .. && \
  echo "**** link libftdi libs ****" && \
  ln -s /usr/lib/libftdi1.so /usr/lib/libftdi.so && \
  ln -s /usr/lib/libftdi1.a /usr/lib/libftdi.a && \
@@ -109,6 +108,9 @@ RUN \
  echo "**** add abc to dialout and cron group ****" && \
  usermod -a -G 16,20 abc && \
  echo " **** cleanup ****" && \
+ cd /tmp/cmake-3.18.1 && \
+ make uninstall && \
+ cd / && \
  apk del --purge \
 	build-dependencies && \
  rm -rf \
