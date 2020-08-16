@@ -9,6 +9,7 @@ exec \
 	s6-setuidgid abc /var/lib/domoticz/domoticz \
 		-sslwww 1443 \
 		-sslcert /config/keys/server_cert.pem \
+		-loglevel normal,status,error,debug \
 		-userdata /config/ \
 		-dbase /config/domoticz.db \
 		-webroot "${RUN_ARRAY[@]}"
