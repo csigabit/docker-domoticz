@@ -96,6 +96,11 @@ RUN \
  git clone https://github.com/csigabit/domoticz-yamaha /var/lib/domoticz/plugins/yamaha-av-receiver && \
  git clone https://github.com/csigabit/domoticz-zigbee2mqtt /var/lib/domoticz/plugins/zigbee2mqtt && \
  git clone https://github.com/csigabit/domoticz-aurora-theme /var/lib/domoticz/www/styles/aurora && \
+ rm -f /var/lib/domoticz/updatedomo && \
+ rm -f /var/lib/domoticz/server_cert.pem && \
+ rm -f /var/lib/domoticz/scripts/install.sh && \
+ rm -f /var/lib/domoticz/scripts/download_update && \
+ rm -f /var/lib/domoticz/scripts/update_domoticz && \
  echo "**** determine runtime packages using scanelf ****" && \
  RUNTIME_PACKAGES="$( \
 	scanelf --needed --nobanner /var/lib/domoticz/domoticz \
